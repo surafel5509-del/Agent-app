@@ -153,7 +153,7 @@ class ChatViewModel @Inject constructor(
             sessionFlow.collectLatest { sessionId ->
                 val previous = activeSessionId
                 activeSessionId = sessionId
-                if (!busy) {
+                if (!busy && (!inputInitialized || sessionId != previous)) {
                     _status.value = ChatStatus.Idle
                     _error.value = null
                     stopTicker()
@@ -238,6 +238,7 @@ class ChatViewModel @Inject constructor(
                 createdAt = clock.nowMillis(),
             )
             sessionRepository.clearDraft(sessionId)
+            sessionRepository.clearDraft(AppConstants.NEW_DRAFT_KEY)
             _status.value = ChatStatus.Sending
             lastSentText = text
 
@@ -248,6 +249,7 @@ class ChatViewModel @Inject constructor(
                         status = MessageStatus.ERROR,
                         error = result.error.detail,
                     )
+                    sessionRepository.saveDraft(sessionId, text)
                     _input.value = text
                     _status.value = ChatStatus.Idle
                     _error.value = ChatError.Send(result.error)
@@ -331,6 +333,7 @@ class ChatViewModel @Inject constructor(
 
         return when (val created = createSessionUseCase(titleFrom(text))) {
             is AppResult.Success -> {
+                activeSessionId = created.value.id
                 settingsRepository.selectSession(created.value.id)
                 created.value.id
             }

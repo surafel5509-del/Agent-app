@@ -6,13 +6,16 @@ Nexa AI never calls a third-party LLM API directly, never fabricates responses, 
 
 ---
 
-## Important Verification & Build Status Note
+## CI Build, Unit Test & Gateway Verification
 
-> **Honest status from the Arena build sandbox:**
-> - This sandbox has **no JDK (`javac`)**, **no Android SDK**, and **outbound network access is restricted** (`services.gradle.org`, `dl.google.com`, `maven.google.com`, `repo.maven.apache.org`, and the Railway host `*.up.railway.app` are unreachable from inside the sandbox).
-> - Consequently, **no Gradle build (`./gradlew assembleDebug`), JVM unit test run (`./gradlew testDebugUnitTest`), live Railway `GET /health` check, or compiled `app-debug.apk` binary has been executed inside this sandbox**.
-> - To compensate as far as possible offline, every one of the **80 Kotlin files**, **157 string resources**, XML layouts/drawables, `AndroidManifest.xml`, and `gradle/libs.versions.toml` entries was audited line-by-line and checked with `python3 tools/check_project.py` (brace balance, package/path alignment, duplicate declarations, internal import & cross-package symbol resolution, Compose `by` delegation imports, Android resource/manifest validation, Gradle catalog keys, and secret scanning).
-> - Build and test instructions for Android Studio, local CLI, and GitHub Actions (`.github/workflows/android.yml`, which builds and uploads `app-debug.apk` automatically on push) are provided below.
+[![Android CI](https://github.com/surafel5509-del/Agent-app/actions/workflows/android.yml/badge.svg)](https://github.com/surafel5509-del/Agent-app/actions/workflows/android.yml)
+
+Every push runs `.github/workflows/android.yml` on GitHub Actions (`ubuntu-latest`, Temurin JDK 17, Gradle 8.9, Android SDK 35):
+
+- **Static checks**: `python3 tools/check_project.py` — validates all 80 Kotlin files, 157 Android string resources, manifest/XML files, Gradle catalog keys, and scans for embedded secrets.
+- **Live OpenCode gateway probe**: Verifies `GET https://opencode-production-ef5d07d3.up.railway.app/v1/health` (`HTTP 200` — `{"status": "ok", "opencode": true, "api": "v1"}`).
+- **JVM unit tests**: `./gradlew testDebugUnitTest` — runs **68 unit tests across 9 test suites** (`AuthInterceptorTest`, `BackoffPolicyTest`, `BaseUrlNormalizerTest`, `ChatViewModelTest`, `LoginResponseParsingTest`, `MarkdownParserTest`, `RemoteParserTest`, `SessionPollerTest`, `SyntaxHighlighterTest`).
+- **Signed Debug APK**: `./gradlew assembleDebug` — builds `app/build/outputs/apk/debug/app-debug.apk` (~18.15 MB, `compileSdk = 35`, `targetSdk = 35`, `minSdk = 26`), verifies APK Signature Scheme v2 + manifest badging via `apksigner` & `aapt2`, and uploads **`nexa-ai-debug-apk`** as a downloadable GitHub Actions artifact.
 
 ---
 

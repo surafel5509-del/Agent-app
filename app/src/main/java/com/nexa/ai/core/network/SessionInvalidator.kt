@@ -26,12 +26,12 @@ class SessionInvalidator @Inject constructor(
     val events: SharedFlow<Unit> = _events.asSharedFlow()
 
     @Volatile
-    private var lastEmitAt: Long = 0L
+    private var lastEmitAt: Long = Long.MIN_VALUE
 
     fun invalidate() {
         val now = clock.nowMillis()
         // Several parallel requests can 401 at once; collapse them into a single event.
-        if (now - lastEmitAt < THROTTLE_MILLIS) return
+        if (lastEmitAt != Long.MIN_VALUE && now - lastEmitAt < THROTTLE_MILLIS) return
         lastEmitAt = now
         _events.tryEmit(Unit)
     }

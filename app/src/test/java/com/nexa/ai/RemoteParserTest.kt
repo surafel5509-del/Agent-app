@@ -80,7 +80,7 @@ class RemoteParserTest {
         assertEquals(MessageRole.USER, messages[0].role)
         assertEquals("Analyze this project", messages[0].content)
         assertEquals(MessageRole.ASSISTANT, messages[1].role)
-        assertEquals("Here is \n\nthe analysis.", messages[1].content)
+        assertEquals("Here is\n\nthe analysis.", messages[1].content)
         assertEquals(MessageStatus.COMPLETE, messages[1].status)
         assertEquals(3L, messages[1].completedAt)
     }

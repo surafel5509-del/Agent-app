@@ -45,6 +45,19 @@ class SyntaxHighlighterTest {
     }
 
     @Test
+    fun `xml and css tokenizers highlight without missing-group errors`() {
+        val xml = SyntaxHighlighter.tokenize("""<!-- header --><div class="card">Hi</div>""", "xml")
+        assertTrue(xml.any { it.type == TokenType.COMMENT })
+        assertTrue(xml.any { it.type == TokenType.PROPERTY && it.text == "class" })
+        assertTrue(xml.any { it.type == TokenType.STRING && it.text.contains("card") })
+
+        val css = SyntaxHighlighter.tokenize("""@media screen { .card { width: 120px; } }""", "css")
+        assertTrue(css.any { it.type == TokenType.ANNOTATION && it.text == "@media" })
+        assertTrue(css.any { it.type == TokenType.PROPERTY && it.text == "width" })
+        assertTrue(css.any { it.type == TokenType.NUMBER && it.text == "120px" })
+    }
+
+    @Test
     fun `sql uses double dash comments and keywords`() {
         val tokens = SyntaxHighlighter.tokenize("-- top users\nSELECT id FROM users", "sql")
         assertTrue(tokens.any { it.type == TokenType.COMMENT })

@@ -186,14 +186,14 @@ object SyntaxHighlighter {
                 tokens += HighlightToken(code.substring(cursor, range.first), TokenType.PLAIN)
             }
             val type = when {
-                match.groups["comment"] != null -> TokenType.COMMENT
-                match.groups["string"] != null -> TokenType.STRING
-                match.groups["annotation"] != null -> TokenType.ANNOTATION
-                match.groups["keyword"] != null -> TokenType.KEYWORD
-                match.groups["number"] != null -> TokenType.NUMBER
-                match.groups["function"] != null -> TokenType.FUNCTION
-                match.groups["type"] != null -> TokenType.TYPE
-                match.groups["punctuation"] != null -> TokenType.PUNCTUATION
+                match.hasGroup("comment") -> TokenType.COMMENT
+                match.hasGroup("string") -> TokenType.STRING
+                match.hasGroup("annotation") -> TokenType.ANNOTATION
+                match.hasGroup("keyword") -> TokenType.KEYWORD
+                match.hasGroup("number") -> TokenType.NUMBER
+                match.hasGroup("function") -> TokenType.FUNCTION
+                match.hasGroup("type") -> TokenType.TYPE
+                match.hasGroup("punctuation") -> TokenType.PUNCTUATION
                 else -> TokenType.PLAIN
             }
             tokens += HighlightToken(match.value, type)
@@ -251,15 +251,15 @@ object SyntaxHighlighter {
                 tokens += HighlightToken(code.substring(cursor, range.first), TokenType.PLAIN)
             }
             val type = when {
-                match.groups["comment"] != null -> TokenType.COMMENT
-                match.groups["string"] != null -> TokenType.STRING
-                match.groups["annotation"] != null -> TokenType.ANNOTATION
-                match.groups["property"] != null -> TokenType.PROPERTY
-                match.groups["keyword"] != null -> TokenType.KEYWORD
-                match.groups["number"] != null -> TokenType.NUMBER
-                match.groups["function"] != null -> TokenType.FUNCTION
-                match.groups["type"] != null -> TokenType.TYPE
-                match.groups["punctuation"] != null -> TokenType.PUNCTUATION
+                match.hasGroup("comment") -> TokenType.COMMENT
+                match.hasGroup("string") -> TokenType.STRING
+                match.hasGroup("annotation") -> TokenType.ANNOTATION
+                match.hasGroup("property") -> TokenType.PROPERTY
+                match.hasGroup("keyword") -> TokenType.KEYWORD
+                match.hasGroup("number") -> TokenType.NUMBER
+                match.hasGroup("function") -> TokenType.FUNCTION
+                match.hasGroup("type") -> TokenType.TYPE
+                match.hasGroup("punctuation") -> TokenType.PUNCTUATION
                 else -> TokenType.PLAIN
             }
             tokens += HighlightToken(match.value, type)
@@ -270,4 +270,11 @@ object SyntaxHighlighter {
         }
         return tokens
     }
+
+    private fun MatchResult.hasGroup(name: String): Boolean =
+        try {
+            groups[name] != null
+        } catch (_: IllegalArgumentException) {
+            false
+        }
 }

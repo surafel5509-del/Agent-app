@@ -203,7 +203,8 @@ object RemoteParser {
         }
 
         val content = when {
-            textParts.isNotEmpty() -> textParts.joinToString("\n\n") { it.text.trim() }.trim()
+            textParts.isNotEmpty() ->
+                textParts.map { it.text.trim() }.filter { it.isNotEmpty() }.joinToString("\n\n")
             else -> extractPlainText(obj)
         }
 
