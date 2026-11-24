@@ -12,6 +12,7 @@ import com.nexa.ai.domain.polling.PollingConfig
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -68,7 +69,7 @@ class SessionPollerTest {
         idleGraceRounds = 2,
     )
 
-    private fun clock(testScheduler: kotlinx.coroutines.test.TestScheduler) = object : Clock {
+    private fun clock(testScheduler: TestCoroutineScheduler) = object : Clock {
         override fun nowMillis(): Long = testScheduler.currentTime
     }
 
