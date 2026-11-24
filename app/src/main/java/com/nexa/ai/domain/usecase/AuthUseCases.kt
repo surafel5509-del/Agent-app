@@ -39,15 +39,17 @@ class LoginUseCase @Inject constructor(
         password: String,
         apiUrl: String,
     ): LoginOutcome {
-        val login = authRepository.login(username, password, apiUrl)
-        if (login is AppResult.Failure) return LoginOutcome.Failed(login.error)
+        val loggedIn = when (val login = authRepository.login(username, password, apiUrl)) {
+            is AppResult.Failure -> return LoginOutcome.Failed(login.error)
+            is AppResult.Success -> login.value
+        }
 
         val health = healthRepository.check()
         agentRepository.refresh()
         sessionRepository.refreshSessions()
 
         return LoginOutcome.Success(
-            state = login.value,
+            state = loggedIn,
             health = health.getOrNull(),
             warning = (health as? AppResult.Failure)?.error,
         )

@@ -73,13 +73,13 @@ data class CodeColors(
     val plain: Color,
     val punctuation: Color,
 ) {
-    fun colorFor(type: TokenType): Color = when (type) {
+    fun colorFor(tokenType: TokenType): Color = when (tokenType) {
         TokenType.COMMENT -> comment
         TokenType.KEYWORD -> keyword
         TokenType.STRING -> string
         TokenType.NUMBER -> number
         TokenType.FUNCTION -> function
-        TokenType.TYPE -> type
+        TokenType.TYPE -> this.type
         TokenType.ANNOTATION -> annotation
         TokenType.PROPERTY -> property
         TokenType.PUNCTUATION -> punctuation
